@@ -2,15 +2,37 @@ import { TransferenciaResponse } from './dto/TransferenciaResponse';
 import { TransferenciaRequest } from './dto/TransferenciaRequest';
 import { TransacaoRepository } from './transacao.repository';
 import { Transacao } from './transacao.entity';
+import { ContaRepository } from '../conta/conta.repository';
 
 export default class TransacaoService {
-  constructor(private readonly repository: TransacaoRepository) {}
+  constructor(
+    private readonly transacaoRepository: TransacaoRepository,
+    private readonly contaRepository: ContaRepository,
+  ) {}
 
-  transferir(
+  async transferir(
     transferencia: TransferenciaRequest,
-  ): TransferenciaResponse | undefined {
+  ): Promise<TransferenciaResponse | undefined> {
     const { origem, destino, valor } = transferencia;
     const now = new Date(Date.now());
+
+    const contaOrigem = await this.contaRepository.findByNumero(origem);
+
+    if (!contaOrigem) {
+      throw new Error(`Conta de origem "${origem}" não existe`);
+    }
+
+    if (contaOrigem.saldo < valor) {
+      throw new Error(
+        `Conta de origem "${origem}" não possui saldo suficiente`,
+      );
+    }
+
+    const contaDestino = await this.contaRepository.findByNumero(destino);
+
+    if (!contaDestino) {
+      throw new Error(`Conta de destino "${destino}" não existe`);
+    }
 
     const inicioExpediente = new Date(
       now.getFullYear(),
@@ -33,7 +55,7 @@ export default class TransacaoService {
     );
 
     let createdAt: string = now.toISOString();
-    let compensaEm: string = now.toISOString();
+    let compensaEm: Date = now;
 
     if (now.getTime() < inicioExpediente.getTime()) {
       compensaEm = new Date(
@@ -44,7 +66,7 @@ export default class TransacaoService {
         0,
         0,
         0,
-      ).toISOString();
+      );
     } else if (now.getTime() > finalExpediente.getTime()) {
       compensaEm = new Date(
         now.getFullYear(),
@@ -54,17 +76,25 @@ export default class TransacaoService {
         0,
         0,
         0,
-      ).toISOString();
+      );
     }
 
     let transacao = new Transacao();
     transacao.origem = origem;
     transacao.destino = destino;
     transacao.valor = valor;
-    transacao.compensaEm = compensaEm;
+    transacao.compensaEm = compensaEm.toISOString();
     transacao.createdAt = createdAt;
 
-    transacao = this.repository.save(transacao);
+    transacao = await this.transacaoRepository.save(transacao);
+
+    if (compensaEm.getTime() === now.getTime()) {
+      contaOrigem.saldo -= valor;
+      contaDestino.saldo += valor;
+
+      await this.contaRepository.save(contaOrigem);
+      await this.contaRepository.save(contaDestino);
+    }
 
     return new TransferenciaResponse(transacao);
   }

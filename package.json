@@ -1,10 +1,14 @@
 {
   "private": true,
   "workspaces": [
-    "src/*",
-    "src/inbounds/*"
+    "packages/*",
+    "packages/inbounds/*",
+    "packages/outbounds/*"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start:console": "TZ=UTC node build/inbounds/console",
+    "test": "yarn workspace @sirius/core test",
+    "coverage": "yarn workspace @sirius/core coverage"
   }
 }

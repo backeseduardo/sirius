@@ -2,6 +2,9 @@
 node_modules
 build
 
+# Coverage
+coverage
+
 # Logs
 yarn-debug.log*
 yarn-error.log*
