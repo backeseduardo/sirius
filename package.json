@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "workspaces": [
+    "src/*",
+    "src/inbounds/*"
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
+}
