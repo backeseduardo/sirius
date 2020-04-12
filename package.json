@@ -2,13 +2,18 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "packages/inbounds/*",
-    "packages/outbounds/*"
+    "packages/transports/*",
+    "packages/data-sources/*"
   ],
   "scripts": {
+    "format": "prettier --write **/*",
+    "prebuild": "rm -rf build",
     "build": "tsc",
-    "start:console": "TZ=UTC node build/inbounds/console",
+    "start:console": "TZ=UTC node build/transports/console",
     "test": "yarn workspace @sirius/core test",
     "coverage": "yarn workspace @sirius/core coverage"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.4"
   }
 }

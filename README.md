@@ -27,3 +27,7 @@ Gateway de Pagamentos
 - Transação só pode ocorrer se a conta de origem possuir saldo suficiente.
 - A transação só pode ocorrer se a conta de destino existir.
 - Quando a transação for compensada o valor deve ser debitado da conta de origem e creditado na conta de destino.
+
+# Dia 3
+
+- Implementar agendamentos de transação, para compensações futuras

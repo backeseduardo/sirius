@@ -1,4 +1,7 @@
 import { Conta } from './conta.entity';
+import { CustomError } from '../utils/custom.error';
+
+export class ContaInvalidaError extends CustomError {}
 
 export interface ContaRepository {
   findById(id: string): Promise<Conta | undefined>;
