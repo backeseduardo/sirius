@@ -15,4 +15,5 @@ export class Conta {
    * 000000 = 6 dígitos, sequencial
    */
   numero!: string;
+  createdAt!: string;
 }

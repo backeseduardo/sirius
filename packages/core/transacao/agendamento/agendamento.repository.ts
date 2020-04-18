@@ -4,6 +4,8 @@ import { CustomError } from '../../utils/custom.error';
 export class AgendamentoTransacaoInvalidoError extends CustomError {}
 
 export interface AgendamentoTransacaoRepository {
+  find(): Promise<AgendamentoTransacao[]>;
+
   findById(id: string): Promise<AgendamentoTransacao | undefined>;
 
   findByInterval(intervalo: Date.Interval): Promise<AgendamentoTransacao[]>;

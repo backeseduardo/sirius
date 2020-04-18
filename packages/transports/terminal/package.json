@@ -1,0 +1,10 @@
+{
+  "name": "terminal",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "rm -rf build",
+    "build": "tsc",
+    "start": "TZ=UTC node build/transports/terminal"
+  }
+}

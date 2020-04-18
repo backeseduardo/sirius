@@ -1,0 +1,15 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "rm -rf build",
+    "build": "tsc",
+    "start": "TZ=UTC node build/transports/api",
+    "start:watch": "TZ=UTC nodemon --watch build build/transports/api"
+  },
+  "dependencies": {
+    "fastify": "^2.13.1",
+    "pino-pretty": "^4.0.0"
+  }
+}

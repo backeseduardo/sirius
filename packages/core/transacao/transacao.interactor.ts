@@ -1,5 +1,5 @@
-import { TransferenciaResponse } from './dto/TransferenciaResponse';
-import { TransferenciaRequest } from './dto/TransferenciaRequest';
+import { TransferenciaResponse } from './dto/transacao.response';
+import { TransferenciaRequest } from './dto/transacao.request';
 import { TransacaoRepository } from './transacao.repository';
 import { ContaRepository } from '../conta/conta.repository';
 import { AgendamentoTransacaoRepository } from './agendamento/agendamento.repository';

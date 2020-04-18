@@ -1,13 +1,17 @@
 import {
+  AgendamentoTransacao,
   AgendamentoTransacaoRepository,
   AgendamentoTransacaoInvalidoError,
-} from '../../../core/transacao/agendamento/agendamento.repository';
-import { AgendamentoTransacao } from '../../../core/transacao/agendamento/agendamento.entity';
+} from '../../../core/transacao';
 import '../../../core/utils/date';
 
 export class MemoryAgendamentoTransacaoDataSource
   implements AgendamentoTransacaoRepository {
   agendamentos: AgendamentoTransacao[] = [];
+
+  async find(): Promise<AgendamentoTransacao[]> {
+    return Promise.resolve(this.agendamentos);
+  }
 
   async findById(id: string): Promise<AgendamentoTransacao | undefined> {
     const agendamento = this.agendamentos.find(

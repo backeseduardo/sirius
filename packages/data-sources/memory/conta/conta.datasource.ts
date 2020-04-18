@@ -1,8 +1,9 @@
 import {
+  Conta,
   ContaRepository,
   ContaInvalidaError,
-} from '../../../core/conta/conta.repository';
-import { Conta } from '../../../core/conta/conta.entity';
+} from '../../../core/conta';
+import { Titular } from '../../../core';
 
 export class MemoryContaDataSource implements ContaRepository {
   contas: Conta[] = [];
@@ -33,6 +34,7 @@ export class MemoryContaDataSource implements ContaRepository {
     }
 
     conta.id = new Date().getTime().toString();
+    conta.createdAt = new Date().toISOString();
 
     this.contas.push(conta as Conta);
 

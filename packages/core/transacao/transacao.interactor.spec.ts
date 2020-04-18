@@ -12,6 +12,7 @@ import { Conta } from '../conta/conta.entity';
 import { AgendamentoTransacaoRepository } from './agendamento/agendamento.repository';
 
 const transacaoRepositoryMock = {
+  find: jest.fn(),
   findById: jest.fn(),
   findByDate: jest.fn(),
   save: jest.fn(),
@@ -26,6 +27,7 @@ const contaRepositoryMock = {
 const agendamentoTransferenciaRepositoryMock = {
   findById: jest.fn(),
   findByInterval: jest.fn(),
+  find: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
 };
@@ -50,7 +52,11 @@ describe('Transacao Interactor', () => {
   describe('.transferir()', () => {
     beforeEach(() => {
       transacaoRepositoryMock.save.mockImplementation((transacao: Transacao) =>
-        Promise.resolve({ id: 'uuid', ...transacao }),
+        Promise.resolve({
+          id: 'uuid',
+          ...transacao,
+          createdAt: new Date(Date.now()).toISOString(),
+        }),
       );
     });
 
@@ -88,6 +94,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       const contaDestinoMock: Conta = {
@@ -102,6 +109,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       contaRepositoryMock.findByNumero.mockImplementation((numero) =>
@@ -146,6 +154,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       const contaDestinoMock: Conta = {
@@ -160,6 +169,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       contaRepositoryMock.findByNumero.mockImplementation((numero) =>
@@ -247,6 +257,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       contaRepositoryMock.findByNumero.mockImplementation((numero) =>
@@ -277,6 +288,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       const contaDestinoMock: Conta = {
@@ -291,6 +303,7 @@ describe('Transacao Interactor', () => {
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
         },
+        createdAt: new Date(Date.now()).toISOString(),
       };
 
       contaRepositoryMock.findByNumero.mockImplementation((numero) =>

@@ -1,0 +1,8 @@
+{
+  "name": "@sirius/adapters",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "fastify-plugin": "^1.6.1"
+  }
+}

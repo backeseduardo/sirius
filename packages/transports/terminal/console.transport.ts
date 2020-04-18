@@ -1,21 +1,13 @@
-import { TransacaoInteractor } from '../../core/transacao/transacao.interactor';
-import { TransferenciaRequest } from '../../core/transacao/dto/TransferenciaRequest';
-import { Conta } from '../../core/conta/conta.entity';
-import {
-  MemoryTransacaoDataSource,
-  MemoryContaDataSource,
-  MemoryAgendamentoTransacaoDataSource,
-} from '../../data-sources/memory';
+import { TransferenciaRequest } from '../../core/transacao';
+import { Conta } from '../../core/conta';
+import sirius from '../../adapters/console';
 
 export async function main() {
-  const memoryTransacaoDataSource = new MemoryTransacaoDataSource();
-  const memoryContaDataSource = new MemoryContaDataSource();
-  const memoryAgendamentoTransacaoDataSource = new MemoryAgendamentoTransacaoDataSource();
-  const transacaoInteractor = new TransacaoInteractor(
-    memoryAgendamentoTransacaoDataSource,
-    memoryTransacaoDataSource,
-    memoryContaDataSource,
-  );
+  const {
+    contaRepository,
+    transacaoRepository,
+    transacaoInteractor,
+  } = sirius();
 
   const contaOrigemMock: Partial<Conta> = {
     numero: '202004000001',
@@ -43,8 +35,8 @@ export async function main() {
     },
   };
 
-  await memoryContaDataSource.save(contaOrigemMock);
-  await memoryContaDataSource.save(contaDestinoMock);
+  await contaRepository.save(contaOrigemMock);
+  await contaRepository.save(contaDestinoMock);
 
   const transferencia: TransferenciaRequest = {
     origem: '202004000001',
@@ -58,12 +50,12 @@ export async function main() {
   console.log(transacao);
 
   console.log('\n# Tabela Transações\n');
-  console.table(memoryTransacaoDataSource.transacoes);
+  console.table(transacaoRepository.transacoes);
 
   const hojeISODate = new Date().toISODateString();
   console.log(`\n# Transações no dia ${hojeISODate}\n`);
-  console.table(await memoryTransacaoDataSource.findByDate(hojeISODate));
+  console.table(await transacaoRepository.findByDate(hojeISODate));
 
   console.log('\n# Tabela Contas\n');
-  console.table(memoryContaDataSource.contas);
+  console.table(contaRepository.contas);
 }

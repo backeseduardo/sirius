@@ -1,12 +1,16 @@
-import { Transacao } from '../../../core/transacao/transacao.entity';
 import {
+  Transacao,
   TransacaoRepository,
   TransacaoInvalidaError,
-} from '../../../core/transacao/transacao.repository';
+} from '../../../core/transacao';
 import '../../../core/utils/date';
 
 export class MemoryTransacaoDataSource implements TransacaoRepository {
   transacoes: Transacao[] = [];
+
+  async find(): Promise<Transacao[]> {
+    return Promise.resolve(this.transacoes);
+  }
 
   async findById(id: string): Promise<Transacao | undefined> {
     const transacao = this.transacoes.find((transacao) => transacao.id === id);
@@ -43,11 +47,10 @@ export class MemoryTransacaoDataSource implements TransacaoRepository {
       transacaoExistente = transacao as Transacao;
 
       return Promise.resolve(transacaoExistente);
-    } else {
-      transacao.createdAt = new Date().toISOString();
     }
 
     transacao.id = new Date().getTime().toString();
+    transacao.createdAt = new Date().toISOString();
 
     this.transacoes.push(transacao as Transacao);
 
