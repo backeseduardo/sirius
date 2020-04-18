@@ -1,5 +1,7 @@
 # Sirius
 
+[![codecov](https://codecov.io/gh/matheusalbino/sirius/branch/master/graph/badge.svg)](https://codecov.io/gh/matheusalbino/sirius)
+
 ## Objetivo:
 
 Gateway de Pagamentos
