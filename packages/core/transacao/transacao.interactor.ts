@@ -29,7 +29,7 @@ export class TransacaoInteractor {
       );
     }
 
-    const contaOrigem = await this.contaRepository.findByNumero(origem);
+    const contaOrigem = await this.contaRepository.findOne({ numero: origem });
 
     if (!contaOrigem) {
       throw new ContaOrigemError(`Conta de origem "${origem}" não existe`);
@@ -41,7 +41,9 @@ export class TransacaoInteractor {
       );
     }
 
-    const contaDestino = await this.contaRepository.findByNumero(destino);
+    const contaDestino = await this.contaRepository.findOne({
+      numero: destino,
+    });
 
     if (!contaDestino) {
       throw new ContaDestinoError(`Conta de destino "${destino}" não existe`);

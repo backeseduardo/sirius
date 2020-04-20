@@ -4,28 +4,87 @@ import {
   AgendamentoTransacaoInvalidoError,
 } from '../../../core/transacao';
 import '../../../core/utils/date';
+import { FindConditions } from '../../../core/utils/repository';
 
 export class MemoryAgendamentoTransacaoDataSource
   implements AgendamentoTransacaoRepository {
   agendamentos: AgendamentoTransacao[] = [];
 
-  async find(): Promise<AgendamentoTransacao[]> {
-    return Promise.resolve(this.agendamentos);
+  private filterByConditions(
+    conditions?: FindConditions<AgendamentoTransacao>,
+  ) {
+    return function (agendamento: AgendamentoTransacao): boolean {
+      let cond = true;
+
+      if (conditions?.id) {
+        cond = cond && agendamento.id === conditions.id;
+      }
+
+      if (conditions?.origem) {
+        cond = cond && agendamento.origem === conditions.origem;
+      }
+
+      if (conditions?.destino) {
+        cond = cond && agendamento.destino === conditions.destino;
+      }
+
+      if (conditions?.valor) {
+        cond = cond && agendamento.valor === conditions.valor;
+      }
+
+      if (conditions?.compensaEm) {
+        const compensaEm = new Date(agendamento.compensaEm).toObject();
+        const { year, month, day } = new Date(conditions.compensaEm).toObject();
+
+        cond =
+          cond &&
+          compensaEm.year === year &&
+          compensaEm.month === month &&
+          compensaEm.day === day;
+      }
+
+      if (conditions?.createdAt) {
+        const createdAt = new Date(agendamento.createdAt).toObject();
+        const { year, month, day } = new Date(conditions.createdAt).toObject();
+
+        cond =
+          cond &&
+          createdAt.year === year &&
+          createdAt.month === month &&
+          createdAt.day === day;
+      }
+
+      return cond;
+    };
   }
 
-  async findById(id: string): Promise<AgendamentoTransacao | undefined> {
-    const agendamento = this.agendamentos.find(
-      (agendamento) => agendamento.id === id,
+  async find(
+    conditions?: FindConditions<AgendamentoTransacao>,
+  ): Promise<AgendamentoTransacao[]> {
+    return this.agendamentos.filter(this.filterByConditions(conditions));
+  }
+
+  async findOne(
+    conditions?: FindConditions<AgendamentoTransacao>,
+  ): Promise<AgendamentoTransacao | undefined> {
+    return this.agendamentos.find(this.filterByConditions(conditions));
+  }
+
+  async findByInterval(
+    intervalo: Date.Interval,
+  ): Promise<AgendamentoTransacao[]> {
+    const resultado = this.agendamentos.filter((agendamento) =>
+      new Date(agendamento.createdAt).isBetween(intervalo),
     );
 
-    return Promise.resolve(agendamento);
+    return Promise.resolve(resultado);
   }
 
   async save(
     agendamento: Partial<AgendamentoTransacao>,
   ): Promise<AgendamentoTransacao> {
     if (agendamento.id) {
-      let agendamentoExistente = await this.findById(agendamento.id);
+      let agendamentoExistente = await this.findOne({ id: agendamento.id });
 
       if (!agendamentoExistente) {
         throw new AgendamentoTransacaoInvalidoError(
@@ -44,16 +103,6 @@ export class MemoryAgendamentoTransacaoDataSource
     this.agendamentos.push(agendamento as AgendamentoTransacao);
 
     return Promise.resolve(agendamento as AgendamentoTransacao);
-  }
-
-  async findByInterval(
-    intervalo: Date.Interval,
-  ): Promise<AgendamentoTransacao[]> {
-    const resultado = this.agendamentos.filter((agendamento) =>
-      new Date(agendamento.createdAt).isBetween(intervalo),
-    );
-
-    return Promise.resolve(resultado);
   }
 
   async delete(id: string): Promise<void> {

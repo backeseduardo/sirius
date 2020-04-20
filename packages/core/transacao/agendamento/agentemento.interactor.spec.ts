@@ -5,18 +5,18 @@ import { TransacaoRepository } from '../transacao.repository';
 import { TransacaoInteractor } from '../transacao.interactor';
 
 const agendamentoTransacaoRepositoryMock = {
-  findById: jest.fn(),
-  findByInterval: jest.fn(),
   find: jest.fn(),
+  findOne: jest.fn(),
+  findByInterval: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
 };
 
 const transacaoRepositoryMock = {
   find: jest.fn(),
-  findById: jest.fn(),
-  findByDate: jest.fn(),
+  findOne: jest.fn(),
   save: jest.fn(),
+  delete: jest.fn(),
 };
 
 const transacaoInteractorMock = {

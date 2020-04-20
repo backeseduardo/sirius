@@ -10,24 +10,26 @@ import { ContaRepository } from '../conta/conta.repository';
 import { Transacao } from './transacao.entity';
 import { Conta } from '../conta/conta.entity';
 import { AgendamentoTransacaoRepository } from './agendamento/agendamento.repository';
+import { FindConditions } from '../utils/repository';
 
 const transacaoRepositoryMock = {
   find: jest.fn(),
-  findById: jest.fn(),
-  findByDate: jest.fn(),
+  findOne: jest.fn(),
   save: jest.fn(),
+  delete: jest.fn(),
 };
 
 const contaRepositoryMock = {
-  findById: jest.fn(),
-  findByNumero: jest.fn(),
+  find: jest.fn(),
+  findOne: jest.fn(),
   save: jest.fn(),
+  delete: jest.fn(),
 };
 
 const agendamentoTransferenciaRepositoryMock = {
-  findById: jest.fn(),
-  findByInterval: jest.fn(),
   find: jest.fn(),
+  findOne: jest.fn(),
+  findByInterval: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
 };
@@ -63,7 +65,7 @@ describe('Transacao Interactor', () => {
     it('deve compensar no ato', async () => {
       defineNow('2020-04-09T19:00:00.000Z');
 
-      contaRepositoryMock.findByNumero.mockResolvedValue({});
+      contaRepositoryMock.findOne.mockResolvedValue({});
 
       const transferencia = await transacaoInteractor.transferir({
         origem: '202004000001',
@@ -93,6 +95,7 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
@@ -108,16 +111,18 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
 
-      contaRepositoryMock.findByNumero.mockImplementation((numero) =>
-        Promise.resolve(
-          [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
-            (conta) => conta.numero === numero,
+      contaRepositoryMock.findOne.mockImplementation(
+        (conditions: FindConditions<Conta>) =>
+          Promise.resolve(
+            [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
+              (conta) => conta.numero === conditions.numero,
+            ),
           ),
-        ),
       );
 
       const resultado = {
@@ -153,6 +158,7 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
@@ -168,16 +174,18 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
 
-      contaRepositoryMock.findByNumero.mockImplementation((numero) =>
-        Promise.resolve(
-          [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
-            (conta) => conta.numero === numero,
+      contaRepositoryMock.findOne.mockImplementation(
+        (conditions: FindConditions<Conta>) =>
+          Promise.resolve(
+            [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
+              (conta) => conta.numero === conditions.numero,
+            ),
           ),
-        ),
       );
 
       const resultado = {
@@ -215,7 +223,7 @@ describe('Transacao Interactor', () => {
     it('deve retornar uma excessão se a conta de origem não existir', async () => {
       defineNow('2020-04-09T19:00:00.000Z');
 
-      contaRepositoryMock.findByNumero.mockResolvedValue(undefined);
+      contaRepositoryMock.findOne.mockResolvedValue(undefined);
 
       expect(
         transacaoInteractor.transferir({
@@ -229,8 +237,11 @@ describe('Transacao Interactor', () => {
     it('deve retornar uma excessão se a conta de destino não existir', async () => {
       defineNow('2020-04-09T19:00:00.000Z');
 
-      contaRepositoryMock.findByNumero.mockImplementation((numero) =>
-        Promise.resolve(numero === '202004000001' ? {} : undefined),
+      contaRepositoryMock.findOne.mockImplementation(
+        (conditions: FindConditions<Conta>) =>
+          Promise.resolve(
+            conditions.numero === '202004000001' ? {} : undefined,
+          ),
       );
 
       expect(
@@ -256,12 +267,16 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
 
-      contaRepositoryMock.findByNumero.mockImplementation((numero) =>
-        Promise.resolve(numero === '202004000001' ? contaOrigemMock : {}),
+      contaRepositoryMock.findOne.mockImplementation(
+        (conditions: FindConditions<Conta>) =>
+          Promise.resolve(
+            conditions.numero === '202004000001' ? contaOrigemMock : {},
+          ),
       );
 
       expect(
@@ -287,6 +302,7 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-origem@fake.com',
           nome: 'Titular Origem',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
@@ -302,16 +318,18 @@ describe('Transacao Interactor', () => {
           dataNascimento: '1990-01-01',
           email: 'titular-destino@fake.com',
           nome: 'Titular Destino',
+          createdAt: new Date(Date.now()).toISOString(),
         },
         createdAt: new Date(Date.now()).toISOString(),
       };
 
-      contaRepositoryMock.findByNumero.mockImplementation((numero) =>
-        Promise.resolve(
-          [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
-            (conta) => conta.numero === numero,
+      contaRepositoryMock.findOne.mockImplementation(
+        (conditions: FindConditions<Conta>) =>
+          Promise.resolve(
+            [{ ...contaOrigemMock }, { ...contaDestinoMock }].find(
+              (conta) => conta.numero === conditions.numero,
+            ),
           ),
-        ),
       );
 
       await transacaoInteractor.transferir({

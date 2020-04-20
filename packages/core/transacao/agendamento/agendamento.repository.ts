@@ -1,18 +1,10 @@
 import { AgendamentoTransacao } from './agendamento.entity';
 import { CustomError } from '../../utils/custom.error';
+import { Repository } from '../../utils/repository';
 
 export class AgendamentoTransacaoInvalidoError extends CustomError {}
 
-export interface AgendamentoTransacaoRepository {
-  find(): Promise<AgendamentoTransacao[]>;
-
-  findById(id: string): Promise<AgendamentoTransacao | undefined>;
-
+export interface AgendamentoTransacaoRepository
+  extends Repository<AgendamentoTransacao> {
   findByInterval(intervalo: Date.Interval): Promise<AgendamentoTransacao[]>;
-
-  save(
-    agendamento: Partial<AgendamentoTransacao>,
-  ): Promise<AgendamentoTransacao>;
-
-  delete(id: string): Promise<void>;
 }

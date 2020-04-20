@@ -4,4 +4,5 @@ export class Titular {
   dataNascimento!: string;
   cpf!: string;
   email!: string;
+  createdAt!: string;
 }

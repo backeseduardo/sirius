@@ -4,39 +4,59 @@ import {
   TransacaoInvalidaError,
 } from '../../../core/transacao';
 import '../../../core/utils/date';
+import { FindConditions } from '../../../core/utils/repository';
 
 export class MemoryTransacaoDataSource implements TransacaoRepository {
   transacoes: Transacao[] = [];
 
-  async find(): Promise<Transacao[]> {
-    return Promise.resolve(this.transacoes);
+  private filterByConditions(conditions?: FindConditions<Transacao>) {
+    return function (transacao: Transacao): boolean {
+      let cond = true;
+
+      if (conditions?.id) {
+        cond = cond && transacao.id === conditions.id;
+      }
+
+      if (conditions?.origem) {
+        cond = cond && transacao.origem === conditions.origem;
+      }
+
+      if (conditions?.destino) {
+        cond = cond && transacao.destino === conditions.destino;
+      }
+
+      if (conditions?.valor) {
+        cond = cond && transacao.valor === conditions.valor;
+      }
+
+      if (conditions?.createdAt) {
+        const createdAt = new Date(transacao.createdAt).toObject();
+        const { year, month, day } = new Date(conditions.createdAt).toObject();
+
+        cond =
+          cond &&
+          createdAt.year === year &&
+          createdAt.month === month &&
+          createdAt.day === day;
+      }
+
+      return cond;
+    };
   }
 
-  async findById(id: string): Promise<Transacao | undefined> {
-    const transacao = this.transacoes.find((transacao) => transacao.id === id);
-
-    return Promise.resolve(transacao);
+  async find(conditions?: FindConditions<Transacao>): Promise<Transacao[]> {
+    return this.transacoes.filter(this.filterByConditions(conditions));
   }
 
-  async findByDate(date: string): Promise<Transacao[] | undefined> {
-    const queryDate = new Date(date).toObject();
-
-    const resultado = this.transacoes.filter((transacao) => {
-      const transacaoDate = new Date(transacao.createdAt).toObject();
-
-      return (
-        transacaoDate.year === queryDate.year &&
-        transacaoDate.month === queryDate.month &&
-        transacaoDate.day === queryDate.day
-      );
-    });
-
-    return Promise.resolve(resultado);
+  async findOne(
+    conditions?: FindConditions<Transacao>,
+  ): Promise<Transacao | undefined> {
+    return this.transacoes.find(this.filterByConditions(conditions));
   }
 
   async save(transacao: Partial<Transacao>): Promise<Transacao> {
     if (transacao.id) {
-      let transacaoExistente = await this.findById(transacao.id);
+      let transacaoExistente = await this.findOne({ id: transacao.id });
 
       if (!transacaoExistente) {
         throw new TransacaoInvalidaError(
@@ -55,5 +75,9 @@ export class MemoryTransacaoDataSource implements TransacaoRepository {
     this.transacoes.push(transacao as Transacao);
 
     return Promise.resolve(transacao as Transacao);
+  }
+
+  async delete(id: string): Promise<void> {
+    return;
   }
 }
