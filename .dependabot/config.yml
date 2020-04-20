@@ -1,0 +1,43 @@
+version: 1
+update_configs:
+  - package_manager: 'javascript'
+    directory: '/'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'
+
+  - package_manager: 'javascript'
+    directory: '/packages/adapters'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'
+
+  - package_manager: 'javascript'
+    directory: '/packages/core'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'
+
+  - package_manager: 'javascript'
+    directory: '/packages/data-sources'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'
+
+  - package_manager: 'javascript'
+    directory: '/packages/transports/api'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'
+
+  - package_manager: 'javascript'
+    directory: '/packages/transports/terminal'
+    update_schedule: 'live'
+    allowed_updates:
+      - match:
+          update_type: 'security'

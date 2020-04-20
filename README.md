@@ -36,5 +36,5 @@ Gateway de Pagamentos
 
 ## Dia 4
 
-- Criação de uma API Rest com Fastify
+- Criar uma API Rest com Fastify
 - Criar um Adapter para o uso do Core pelo Fastify
